@@ -44,18 +44,17 @@ async function postRecords(req, res) {
         `
               SELECT * FROM sessions
               JOIN users
-              ON sessions."userId" = users.id
+              ON sessions.userId = users.id
               WHERE sessions.token = $1
             `,
         [token]
       );
 
       const user = result.rows[0];
-
       if (user) {
         const { description, date, type, value } = req.body;
-        const postRecord = await connection.query(
-          `INSERT INTO records ("userId",description, date, type, value) VALUES ($1, $2, $3, $4)`,
+        await connection.query(
+          `INSERT INTO records (userId,description, date, type, value) VALUES ($1, $2, $3, $4,$5);`,
           [user.id, description, date, type, value]
         );
         res.sendStatus(201);
