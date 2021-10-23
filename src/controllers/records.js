@@ -1,4 +1,4 @@
-import connection from "../database/database";
+import connection from "../database/database.js";
 
 async function getRecords(req, res) {
   try {
@@ -53,8 +53,8 @@ async function postRecords(req, res) {
       if (user) {
         const { description, date, type, value } = req.body;
         const postRecord = await connection.query(
-          `INSERT INTO records (description, date, type, value) VALUES ($1, $2, $3, $4)`,
-          [description, date, type, value]
+          `INSERT INTO records ("userId",description, date, type, value) VALUES ($1, $2, $3, $4)`,
+          [user.id,description, date, type, value]
         );
         res.sendStatus(201);
       } else {
