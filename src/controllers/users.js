@@ -2,20 +2,21 @@ import connection from "../database/database.js";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 
-async function getEmails(req, res) {
-  try {
-    const result = await connection.query(`SELECT email FROM users;`);
-    res.status(200).send(result.rows);
-  } catch (error) {}
-}
-
 async function postUser(req, res) {
   try {
     const { name, email, password } = req.body;
 
+    const allEmails = await connection.query(`SELECT email FROM users;`);
+    const emailExists = allEmails.rows.some((info) => {
+      return info.email == email;
+    });
+    if (emailExists) {
+      res.status(409).send("Email já cadastrado");
+      return;
+    }
     const passwordHash = bcrypt.hashSync(password, 10);
 
-    await connection.query(
+    const result = await connection.query(
       `
         INSERT INTO users
         (name, email, password)
@@ -24,7 +25,7 @@ async function postUser(req, res) {
       [name, email, passwordHash]
     );
 
-    res.sendStatus(201);
+    res.status(201).send(result);
   } catch (error) {
     res.send(error);
   }
@@ -47,11 +48,11 @@ async function login(req, res) {
 
       if (user && bcrypt.compareSync(password, user.password)) {
         const token = uuid();
-        res.status(201).send(token);
         await connection.query("INSERT INTO sessions (userId, token) VALUES ($1, $2);", [
           user.id,
           token,
         ]);
+        res.status(201).send(token);
       } else {
         res.status(401).send("Usuário não encontrado");
       }
@@ -61,4 +62,13 @@ async function login(req, res) {
   }
 }
 
-export { postUser, login, getEmails };
+async function deleteCurrentSession(req, res) {
+  try {
+    const { token } = req.body;
+    const result = await connection.query("DELETE FROM sessions WHERE token = $1;", [token]);
+    res.sendStatus(201);
+  } catch (error) {
+    res.sendStatus(401);
+  }
+}
+export { postUser, login, deleteCurrentSession };
