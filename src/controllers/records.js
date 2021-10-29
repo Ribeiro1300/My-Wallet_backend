@@ -23,7 +23,7 @@ async function getRecords(req, res) {
       const allRecords = await connection.query("SELECT * FROM records WHERE userid = $1;", [
         user.id,
       ]);
-      res.status(201).send(allRecords.rows);
+      res.status(201).send({ records: allRecords.rows, name: user.name });
     } else {
       res.sendStatus(401);
     }
