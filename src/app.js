@@ -1,21 +1,21 @@
 import express from "express";
 import cors from "cors";
-import { postUser, login, deleteCurrentSession } from "./controllers/users.js";
-import { getRecords, postRecords } from "./controllers/records.js";
+import * as usersController from "./controllers/usersController.js";
+import * as recordsController from "./controllers/recordsController.js";
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-app.post("/users", postUser);
+app.post("/users", usersController.signup);
 
-app.post("/userLogin", login);
+app.post("/userLogin", usersController.login);
 
-app.post("/deleteSession", deleteCurrentSession);
+app.post("/deleteSession", usersController.deleteCurrentSession);
 
-app.get("/records", getRecords);
+app.get("/records", recordsController.getRecords);
 
-app.post("/records", postRecords);
+app.post("/records", recordsController.postRecords);
 
 export default app;
