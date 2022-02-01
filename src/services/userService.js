@@ -1,7 +1,9 @@
-import * as userRepository from "../repositories/userRepository";
+import * as userRepository from "../repositories/userRepository.js";
+import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 
 async function signup(name, email, password) {
+  console.log(name, email, password);
   const passwordHash = bcrypt.hashSync(password, 10);
 
   const result = await userRepository.signup(name, email, passwordHash);

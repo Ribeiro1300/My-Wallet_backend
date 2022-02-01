@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import * as usersController from "./controllers/usersController";
-import * as recordsController from "./controllers/recordsController";
+import * as usersController from "./controllers/usersController.js";
+import * as recordsController from "./controllers/recordsController.js";
 
 const app = express();
 
